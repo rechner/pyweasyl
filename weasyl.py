@@ -44,22 +44,68 @@ class Weasyl(object):
                  'PyWeasyl client 0.1a, '.format(sys.platform)
 
     def __init__(self, api_key=''):
-        self.api_key = api_key
-        self.headers = {
-            'X-Weasyl-API-Key' : api_key
-        }
+        self._api_key = api_key
+        self.headers = {}
+        if api_key != '':
+            self.headers = {
+                'X-Weasyl-API-Key' : api_key
+            }
+
+    def __repr__(self):
+        return "<{0}('{1}')".format(self.__class__.__name__, self.api_key)
+
+    @property
+    def api_key(self):
+        return self._api_key
+
+    @api_key.setter
+    def api_key(self, api_key):
+        self._api_key = api_key
+        self.headers = {} # URLLib2 or Weasyl gets weird when headers are blank
+        if api_key != '':
+            self.headers = {
+                'X-Weasyl-API-Key' : api_key
+            }
 
     # json decoding raises a ValueError if there's a problem
     def _GET_request(self, endpoint, params={}):
         params = self._cullParameters(params)
         data = urllib.urlencode(params)
         # urllib doesn't like us skipping parameters
-        if data == '':
-            data = None
         url = "{0}{1}?{2}".format(self.ENDPOINT_URL, endpoint, data)
         req = urllib2.Request(url, None, self.headers)
-        resp = urllib2.urlopen(req)
-        return json.loads(resp.read())
+        try:
+            resp = urllib2.urlopen(req)
+            resp_decoded = json.loads(resp.read())
+        except urllib2.HTTPError as e:
+            err = 'Unspecified'
+            code = -1
+            resp = e.read()
+            try:  # Server might return plain text if API key is wrong
+                resp_decoded = json.loads(resp)
+            except ValueError:
+                err = resp
+                resp_decoded = {}
+            if 'error' in resp_decoded:
+                # First case according to spec, second observed
+                if 'name' in resp_decoded['error']:
+                    err = resp_decoded['error']['name']
+                else:
+                    err = resp_decoded['error']['text']
+                if 'code' in resp_decoded['error']:
+                    code = resp_decoded['error']['code']
+
+            if e.code == 401:
+                raise self.Unauthorized(err, code, e.reason)
+            elif e.code == 403:
+                raise self.Forbidden(err, code, e.reason)
+            elif e.code == 404:
+                raise self.NotFound(err, code, e.reason)
+            elif e.code == 422:
+                raise self.Unprocessable(err, code, e.reason)
+            elif e.code == 500:
+                raise self.ServerError(err, code, e.reason)
+        return resp_decoded
 
     def _POST_request(self, endpoint, params={}):
         params = self._cullParameters(params)
@@ -151,6 +197,9 @@ class Weasyl(object):
             * increment_views -- If False, the view count for the
                 submission will not be incremented.  If True while
                 authenticated, the view count may be increased.
+
+        Raises Weasyl.Forbidden with reason 'submissionRecordMissing'
+        if the submission does not exist.
         """
         if not anyway:  # 'anyway' parameter just needs to be non-empty
             anyway = None
@@ -301,12 +350,39 @@ class Weasyl(object):
         params['client_secret'] = client_secret
         self._POST_request('oauth2/token', kwargs)
 
+    class Error(Exception):
+        """Base exception class"""
+        def __init__(self, err, code=-1, http_reason=''):
+            self.error = err
+            self.code = code
+            self.http_reason = http_reason
+        def __str__(self):
+            return repr(self.error)
+
+    class Unauthorized(Error):
+        pass
+
+    class Forbidden(Error):
+        pass
+
+    class NotFound(Error):
+        pass
+
+    class Unprocessable(Error):
+        pass
+
+    class ServerError(Error):
+        pass
+
 if __name__ == '__main__':
-    api = Weasyl("API_Key_here")
+    #TODO: Turn these into test cases
+    api = Weasyl()
     #print api.version()
     #print api.whoami()
     #print api.useravatar('rechner')
-    #print api.view_submission(602979)
+    #print api.view_submission(602979) #General
+    #print api.view_submission(789591) #18+ submission
+    #print api.view_submission(999999) #DNE
     #print api.frontpage(count=10)
     #print api.view_user('rechner')
     #print api.user_gallery('rechner')
