@@ -265,7 +265,7 @@ class Weasyl(object):
             * backtime - Return only submissions with a unixtime
                 greater than `backtime` for pagination.
             * nexttime - Return only submissions with a unixtime
-                greater than `nexttime` for pagination.
+                less than `nexttime` for pagination.
 
         Returns a maximum of 100 submissions per request.  The result is
         a dictionary with three keys: submissions, backid, and nextid.
