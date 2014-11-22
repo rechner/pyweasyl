@@ -43,14 +43,14 @@ The currently logged-in user, as a dictionary.  For example:
 `{"login": "weykent, "userid" : 5756}`
 
 If there is no current user (running unauthorized), this will raise
-[Weasyl.Unauthorized](Weasyl.Unauthorized).
+[Weasyl.Unauthorized](#Weasyl.Unauthorized).
 
 ### Weasyl.useravatar()
 `useravatar(self, username)`
 
 Returns the URL for a given user's avatar.  For users without an avatar,
 this will return the default avatar icon.  If the user does not exist,
-an [Weasyl.Unauthorized](Weasyl.Unauthorized) exception is raised.
+an [Weasyl.Unauthorized](#Weasyl.Unauthorized) exception is raised.
 
 #### Arguments:
 - *username* - The user's login name, all lower-case alpha-numeric string.
@@ -63,9 +63,9 @@ A list of submissions from the front page, respecting the current user's
 browsing settings.
 
 #### Optional arguments:
-- *since* - An ISO 8601 timestamp (YYYY-MM-DDTHH:MM:SSZ) in UTC.  If
+- `since` - An ISO 8601 timestamp (YYYY-MM-DDTHH:MM:SSZ) in UTC.  If
     privided, will only show frontpage submissions after the timestamp.
-- count - If specified, no more than this many submissions will be returned.
+- `count` - If specified, no more than this many submissions will be returned.
 
 Returns at most 100 submissions, and a 'count' value exceeding 100 will
 be coerced to 100.  Submissions returned are filtered by user's tag filters
@@ -82,13 +82,13 @@ containing all data pertaining to a particular submission (image). Raises
 `'submissionRecordMissing'` if the submission does not exist.
 
 #### Arguments:
-- *submitid* - The reference ID of the submission.
+- `submitid` - The reference ID of the submission.
 
 #### Optional arguments:
-- *anyway* - If False, the current user's tag filters may cause an error
+- `anyway` - If False, the current user's tag filters may cause an error
     to be returned instead of a submission object.  When True (or
     non-empty), tag filters will be ignored.
-- *increment_views* - If False, the view count for the submission will
+- `increment_views`- If False, the view count for the submission will
     not be incremented. If True while authenticated, the view count may
     be increased.
 
@@ -108,15 +108,15 @@ of [submission objects](https://projects.weasyl.com/weasylapi/#submissions).
 `backid` and `nextid` are used for [pagination](https://projects.weasyl.com/weasylapi/#pagination).
 
 #### Arguments:
-- *username* - Login name of user.
+- `username` - Login name of user.
 
 #### Optional arguments:
-- *since* - An ISO 8601 timestamp.  Only submissions made after this time
+- `since` - An ISO 8601 timestamp.  Only submissions made after this time
     will be returned.
-- *count* - Limit submissions returned to this number.
-- *folderid* - Return only submissions matching the given `folderid`.
-- *backid* - Return only submissions with a `submitid` greater than `backid`.
-- *nextid* - Return only submissions with a `submitid` less than `nextid`.
+- `count` - Limit submissions returned to this number.
+- `folderid` - Return only submissions matching the given `folderid`.
+- `backid` - Return only submissions with a `submitid` greater than `backid`.
+- `nextid` - Return only submissions with a `submitid` less than `nextid`.
 
 ### Weasyl.message_submissions()
 `message_submissions(self, count=None, backtime=None, nexttime=None)`
@@ -128,10 +128,10 @@ of [submission objects](https://projects.weasyl.com/weasylapi/#submissions).
 `backid` and `nextid` are used for [pagination](https://projects.weasyl.com/weasylapi/#pagination).
 
 #### Optional arguments:
-- *count* - Limit number of submissions returned.
-- *backtime* - Return only submissions with a unixtime greater than 
+- `count` - Limit number of submissions returned.
+- `backtime` - Return only submissions with a unixtime greater than 
     `backtime` for pagination.
-- *nexttime* - Return only submissison with a unixtime less than
+- `nexttime` - Return only submissison with a unixtime less than
     `nexttime` for pagination.
 
 ### Weasyl.message_summary():
@@ -157,14 +157,14 @@ The standard OAuth2 authorization endpoint.  Currently only authorisation
 code grants with callback URIs are supported.
 
 #### Arguments:
-- *client_id* - The client identifier issued to the consumer by Weasyl.
-- *redirect_uri* - The callback URI the consumer provided to Weasyl before
+- `client_id` - The client identifier issued to the consumer by Weasyl.
+- `redirect_uri` - The callback URI the consumer provided to Weasyl before
     the client_id was issued.
-- *state* - A random, unguessable string.
+- `state` - A random, unguessable string.
 
 #### Keyword arguments:
-- *scope* - Currently, the only allowed scope is "wholesite".
-- *response_type* - Currently, the only allowed response type is "code".
+- `scope` - Currently, the only allowed scope is "wholesite".
+- `response_type` - Currently, the only allowed response type is "code".
 
 On successful authorisation, the user agent will be redirected to the
 `redirect_uri` with the query parameters of `code` and `state`.  `code`
@@ -177,7 +177,7 @@ and `state` will be the same `state` that was passed originally.
 The endpoint for fetching and refreshing OAuth2 tokens.
 
 #### Arguments:
-- *client_secret* - The client secret issued to the consumer by Weasyl.
+- `client_secret` - The client secret issued to the consumer by Weasyl.
 
 This function accepts additional form parameters passed by keyword
 argument, as described in the [OAuth2 RFC](http://tools.ietf.org/html/rfc6749#section-6).
