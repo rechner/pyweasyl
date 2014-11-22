@@ -43,14 +43,14 @@ The currently logged-in user, as a dictionary.  For example:
 `{"login": "weykent, "userid" : 5756}`
 
 If there is no current user (running unauthorized), this will raise
-[Weasyl.Unauthorized](#Weasyl.Unauthorized).
+[Weasyl.Unauthorized](#weasylunauthorized).
 
 ### Weasyl.useravatar()
 `useravatar(self, username)`
 
 Returns the URL for a given user's avatar.  For users without an avatar,
 this will return the default avatar icon.  If the user does not exist,
-an [Weasyl.Unauthorized](#Weasyl.Unauthorized) exception is raised.
+an [Weasyl.Unauthorized](#weasylunauthorized) exception is raised.
 
 #### Arguments:
 - *username* - The user's login name, all lower-case alpha-numeric string.
@@ -78,7 +78,7 @@ The structure returned is a [submission object](https://projects.weasyl.com/weas
 
 Returns a [submission object](https://projects.weasyl.com/weasylapi/#submissions)
 containing all data pertaining to a particular submission (image). Raises
-[Weasyl.Forbidden](Weasyl.Forbidden) with reason 
+[Weasyl.Forbidden](#weasylforbidden) with reason 
 `'submissionRecordMissing'` if the submission does not exist.
 
 #### Arguments:
