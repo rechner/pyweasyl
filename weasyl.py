@@ -154,9 +154,12 @@ class Weasyl(object):
         Users without an avatar will get the default avatar icon back.
         If the user does not exist, this may return a 401 Error.
         """
-        response = self._GET_request('useravatar',
-                                     { 'username': username })
-        return response['avatar']
+        # Got even easier
+        return 'https://www.weasyl.com/~{0}/avatar'.format(username)
+
+        #response = self._GET_request('useravatar',
+        #                             { 'username': username })
+        #return response['avatar']
 
     def frontpage(self, since=None, count=None):
         """
