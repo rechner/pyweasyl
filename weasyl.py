@@ -29,6 +29,10 @@ username in all lowercase, of only alphanumeric ASCII characters.
 All dates are referenced in ISO 8601 UTC time: ``YYYY-MM-DDTHH:MM:SSZ``
 """
 
+__version__ = '1.0'
+__author__ = 'Rechner Fox <me@profoundfox.com'
+__all__ = ['Weasyl']
+
 import sys
 import urllib
 import urllib2
@@ -378,15 +382,14 @@ class Weasyl(object):
         pass
 
 if __name__ == '__main__':
-    #TODO: Turn these into test cases
     api = Weasyl()
-    #print api.version()
+    print api.version()
     #print api.whoami()
     #print api.useravatar('rechner')
     #print api.view_submission(602979) #General
-    #print api.view_submission(789591) #18+ submission
+    #print api.view_submission(735256) #18+ submission
     #print api.view_submission(999999) #DNE
-    #print api.frontpage(count=10)
+    #print api.frontpage(count=10)[0]
     #print api.view_user('rechner')
     #print api.user_gallery('rechner')
     #print api.message_submissions()
