@@ -6,7 +6,7 @@ from weasyl import Weasyl
 
 # A list of all the version numbers reported by Weasyl known to work
 # with this API binding:    <`0`>
-SUPPORTED_VERSIONS = ('c759381')
+SUPPORTED_VERSIONS = ('c759381', 'cc4630e')
 
 class TestWeasylAPI(unittest.TestCase):
     def setUp(self):
