@@ -29,13 +29,18 @@ username in all lowercase, of only alphanumeric ASCII characters.
 All dates are referenced in ISO 8601 UTC time: ``YYYY-MM-DDTHH:MM:SSZ``
 """
 
-__version__ = '1.0'
+__version__ = '1.1'
 __author__ = 'Rechner Fox <me@profoundfox.com'
 __all__ = ['Weasyl']
 
 import sys
-import urllib
-import urllib2
+try:
+    from urllib.parse import urlencode
+    from urllib.request import urlopen, Request
+    from urllib.error import HTTPError
+except ImportError:
+    from urllib import urlencode
+    from urllib2 import urlopen, Request, HTTPError
 import json
 #from bs4 import BeautifulSoup
 
@@ -74,19 +79,19 @@ class Weasyl(object):
     # json decoding raises a ValueError if there's a problem
     def _GET_request(self, endpoint, params={}):
         params = self._cullParameters(params)
-        data = urllib.urlencode(params)
+        data = urlencode(params)
         # urllib doesn't like us skipping parameters
         url = "{0}{1}?{2}".format(self.ENDPOINT_URL, endpoint, data)
-        req = urllib2.Request(url, None, self.headers)
+        req = Request(url, None, self.headers)
         try:
-            resp = urllib2.urlopen(req)
-            resp_decoded = json.loads(resp.read())
-        except urllib2.HTTPError as e:
+            resp = urlopen(req)
+            resp_decoded = json.loads(resp.read().decode('UTF-8'))
+        except HTTPError as e:
             err = 'Unspecified'
             code = -1
             resp = e.read()
             try:  # Server might return plain text if API key is wrong
-                resp_decoded = json.loads(resp)
+                resp_decoded = json.loads(resp.decode('UTF-8'))
             except ValueError:
                 err = resp
                 resp_decoded = {}
@@ -113,18 +118,18 @@ class Weasyl(object):
 
     def _POST_request(self, endpoint, params={}):
         params = self._cullParameters(params)
-        data = urllib.urlencode(params)
+        data = urlencode(params)
         # urllib doesn't like us skipping parameters
         if data == '':
             data = None
         url = "{0}{1}".format(self.ENDPOINT_URL, endpoint)
-        req = urllib2.Request(url, data, self.headers)
-        resp = urllib2.urlopen(req)
+        req = Request(url, data, self.headers)
+        resp = urlopen(req)
         return resp.read()
 
     # remove keys from a dictionary with None-type values
     def _cullParameters(self, params):
-        for key in params.keys():
+        for key in list(params.keys()):
             if params[key] is None:
                 del params[key]
         return params
@@ -383,15 +388,15 @@ class Weasyl(object):
 
 if __name__ == '__main__':
     api = Weasyl()
-    print api.version()
-    #print api.whoami()
-    #print api.useravatar('rechner')
-    #print api.view_submission(602979) #General
-    #print api.view_submission(735256) #18+ submission
-    #print api.view_submission(999999) #DNE
-    #print api.frontpage(count=10)[0]
-    #print api.view_user('rechner')
-    #print api.user_gallery('rechner')
-    #print api.message_submissions()
-    #print api.message_summary()
+    print((api.version()))
+    #print(api.whoami())
+    #print(api.useravatar('rechner'))
+    #print(api.view_submission(602979)) #General
+    #print(api.view_submission(735256)) #18+ submission
+    #print(api.view_submission(999999)) #DNE
+    #print(api.frontpage(count=10)[0])
+    #print(api.view_user('rechner'))
+    #print(api.user_gallery('rechner'))
+    #print(api.message_submissions())
+    #print(api.message_summary())
 

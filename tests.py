@@ -6,7 +6,7 @@ from weasyl import Weasyl
 
 # A list of all the version numbers reported by Weasyl known to work
 # with this API binding:    <`0`>
-SUPPORTED_VERSIONS = ('c759381', 'cc4630e')
+SUPPORTED_VERSIONS = ('c759381', 'cc4630e', '6c44579')
 
 class TestWeasylAPI(unittest.TestCase):
     def setUp(self):
@@ -17,50 +17,50 @@ class TestWeasylAPI(unittest.TestCase):
         self.assertTrue(self.api.version() in SUPPORTED_VERSIONS)
 
     def test_avatar(self):
-        self.assertEquals(self.api.useravatar('rechner'),
+        self.assertEqual(self.api.useravatar('rechner'),
                           'https://www.weasyl.com/~rechner/avatar')
 
     def test_session_unsigned(self):
         try:
             self.api.whoami()
         except Weasyl.Unauthorized as e:
-            self.assertEquals(e.error, 'Session unsigned')
+            self.assertEqual(e.error, 'Session unsigned')
 
         try:
             self.api.message_submissions()
         except Weasyl.Unauthorized as e:
-            self.assertEquals(e.error, 'Session unsigned')
+            self.assertEqual(e.error, 'Session unsigned')
 
         try:
             self.api.message_summary()
         except Weasyl.Unauthorized as e:
-            self.assertEquals(e.error, 'Session unsigned')
+            self.assertEqual(e.error, 'Session unsigned')
 
     def test_submission_exists(self):
         submission = self.api.view_submission(602979)
         self.assertGreater(len(submission['media']), 0)
-        self.assertEquals(submission['posted_at'], '2014-05-13T04:24:35+00:00Z')
-        self.assertEquals(submission['rating'], 'general')
-        self.assertEquals(submission['submitid'], 602979)
-        self.assertEquals(submission['subtype'], 'visual')
+        self.assertEqual(submission['posted_at'], '2014-05-13T04:24:35+00:00Z')
+        self.assertEqual(submission['rating'], 'general')
+        self.assertEqual(submission['submitid'], 602979)
+        self.assertEqual(submission['subtype'], 'visual')
         self.assertTrue('secret_societies' in submission['tags'])
         self.assertGreaterEqual(submission['views'], 3)
 
     def test_submission_dne(self):
         try:
-            self.api.view_submission(999999)
+            self.api.view_submission(9999999)
         except Weasyl.Forbidden as e:
-            self.assertEquals(e.error, 'submissionRecordMissing')
+            self.assertEqual(e.error, 'submissionRecordMissing')
 
     def test_rating_exceeded(self):
         try:
             self.api.view_submission(735256)
         except Weasyl.Forbidden as e:
-            self.assertEquals(e.error, 'RatingExceeded')
+            self.assertEqual(e.error, 'RatingExceeded')
 
     def test_frontpage(self):
         page = self.api.frontpage(count=10)
-        self.assertEquals(len(page), 10)
+        self.assertEqual(len(page), 10)
         self.assertTrue('rating' in page[0].keys())
         self.assertTrue('media' in page[0].keys())
         self.assertTrue('owner' in page[0].keys())
@@ -68,7 +68,7 @@ class TestWeasylAPI(unittest.TestCase):
 
     def test_view_user(self):
         user = self.api.view_user('rechner')
-        self.assertEquals(user['created_at'], '2014-05-03T02:20:29Z')
+        self.assertEqual(user['created_at'], '2014-05-03T02:20:29Z')
         self.assertFalse(user['suspended'])
         self.assertGreater(len(user['recent_submissions']), 0)
 
