@@ -50,15 +50,14 @@ class Weasyl(object):
     """
     ENDPOINT_URL = "https://www.weasyl.com/api/"
     USER_AGENT = 'Mozilla/4.0 (compatible; {0}) ' \
-                 'PyWeasyl client 0.1a, '.format(sys.platform)
+                 'PyWeasyl client {1}'.format(sys.platform, __version__)
 
     def __init__(self, api_key=''):
         self._api_key = api_key
         self.headers = {}
+        self.headers['User-Agent'] = self.USER_AGENT
         if api_key != '':
-            self.headers = {
-                'X-Weasyl-API-Key' : api_key
-            }
+            self.headers['X-Weasyl-API-Key'] = api_key
 
     def __repr__(self):
         return "<{0}('{1}')".format(self.__class__.__name__, self.api_key)
@@ -70,11 +69,10 @@ class Weasyl(object):
     @api_key.setter
     def api_key(self, api_key):
         self._api_key = api_key
-        self.headers = {} # URLLib2 or Weasyl gets weird when headers are blank
         if api_key != '':
-            self.headers = {
-                'X-Weasyl-API-Key' : api_key
-            }
+            self.headers['X-Weasyl-API-Key'] = api_key
+        else:
+            del self.headers['X-Weasyl-API-Key']
 
     # json decoding raises a ValueError if there's a problem
     def _GET_request(self, endpoint, params={}):
